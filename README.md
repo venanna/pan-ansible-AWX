@@ -6,7 +6,7 @@
 
 The goal of this repository is to provide a simple "Hello World!" example of using Ansible with Palo Alto Networks firewalls.
 
-All files related to Ansible are stored within the [ansible](https://dev.azure.com/pan-automation-demos/Ansible/_git/pan-ansible-hello-world?path=/ansible) directory at the root of this repository.
+All files related to Ansible are stored within the [ansible](./ansible/) directory at the root of this repository.
 
 ## 🚀 `Executing the playbook`
 
