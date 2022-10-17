@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "demo-ansible-pan-config"
+name = "pan-ansible-examples"
 version = "0.1.0"
 description = "Project to host Ansible configurations."
 authors = ["Calvin Remsburg <cremsburg.dev@gmail.com>"]
