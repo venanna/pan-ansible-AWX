@@ -339,3 +339,48 @@
           username: "{{ panos.username }}"
       register: results
       loop: '{{ fw_config["security"] }}'
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: NAT
+    # --------------------------------------------------------------------------------------------
+    - name: create NAT policies for static translations
+      panos_nat_rule2:
+        description: "{{ item.description }}"
+        destination_addresses: "{{ item.destination }}"
+        from_zones: "{{ item.from }}"
+        group_tag: "{{ item.group_tag }}"
+        name: "{{ item.name }}"
+        nat_type: "ipv4"
+        service: "{{ item.service }}"
+        source_addresses: "{{ item.source }}"
+        source_translation_static_bi_directional: True
+        source_translation_static_translated_address: "{{ item.source_translation.static_ip.translated_address }}"
+        source_translation_type: "static-ip"
+        to_zones: "{{ item.to }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["nat"] }}'
+      when: item.source_translation.static_ip is defined
+
+    - name: create NAT policies for dynamic port translation
+      panos_nat_rule2:
+        name: "{{ item.name }}"
+        description: "{{ item.description }}"
+        nat_type: "ipv4"
+        from_zones: "{{ item.from }}"
+        to_zones: "{{ item.to }}"
+        to_interface: "{{ item.source_translation.dynamic_ip_and_port.interface_address.interface }}"
+        service: "{{ item.service }}"
+        source_addresses: "{{ item.source }}"
+        destination_addresses: "{{ item.destination }}"
+        source_translation_type: "dynamic-ip-and-port"
+        source_translation_address_type: "interface-address"
+        source_translation_interface: "{{ item.source_translation.dynamic_ip_and_port.interface_address.interface }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["nat"] }}'
+      when: item.source_translation.dynamic_ip_and_port is defined
