@@ -1,0 +1,11 @@
+all:
+  children:
+    firewalls:
+      hosts:
+        aus-vfw-01:
+        dal-vfw-01:
+        dal-vfw-02:
+        hou-vfw-01:
+        hou-vfw-02:
+        hdq-vfw-01:
+        san-vfw-01:

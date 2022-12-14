@@ -1,0 +1,7 @@
+---
+panos:
+    # our PAN-OS username
+    username: "automation"
+
+    # our PAN-OS API token
+    token: "myAPItokenwashere"

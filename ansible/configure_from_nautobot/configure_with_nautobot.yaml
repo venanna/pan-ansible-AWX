@@ -1,0 +1,386 @@
+---
+- hosts: "{{ device }}"
+  connection: local
+  become: false
+  gather_facts: false
+  collections:
+    - paloaltonetworks.panos
+    - ansible.utils
+
+  tasks:
+    # --------------------------------------------------------------------------------------------
+    # Queue a sync operation from Nautobot to our config_context GitHub repo
+    # --------------------------------------------------------------------------------------------
+    - name: Nautobt sync with GitHub repository
+      ansible.builtin.uri:
+        headers:
+          Authorization: Token {{ nautobot.token }}
+        method: POST
+        status_code: 200
+        url: http://{{ nautobot.url }}/api/extras/git-repositories/{{ nautobot.git_repo }}/sync/
+        validate_certs: "no"
+
+    # --------------------------------------------------------------------------------------------
+    # Provide a ten second cooldown to allow the sync job to complete
+    # --------------------------------------------------------------------------------------------
+    - name: Pause for ten seconds to allow git sync to complete
+      ansible.builtin.pause:
+        seconds: 10
+
+    # --------------------------------------------------------------------------------------------
+    # Ask Nautobot for our device's UUID
+    # --------------------------------------------------------------------------------------------
+    - name: Retrieve our firewall's UUID from Nautobot
+      ansible.builtin.uri:
+        headers:
+          Authorization: Token {{ nautobot.token }}
+        method: GET
+        status_code: 200
+        url: http://{{ nautobot.url }}/api/dcim/devices/?name={{ device }}
+        validate_certs: "no"
+      register: device_info
+      run_once: true
+
+    # --------------------------------------------------------------------------------------------
+    # Store the interesting UUID value from `device_info` into `device_uuid`
+    # --------------------------------------------------------------------------------------------
+    - name: Store our device's UUID in a dedicated object named `device_uuid`
+      set_fact:
+        device_uuid: '{{ device_info["json"]["results"][0]["id"] }}'
+
+    # --------------------------------------------------------------------------------------------
+    # Ask Nautobot for everything it has in relation to our device
+    # --------------------------------------------------------------------------------------------
+    - name: Retrieve device configuration context and nautobot parameters
+      ansible.builtin.uri:
+        body:
+          variables:
+            device_id: "{{ device_uuid }}"
+        body_format: json
+        headers:
+          Authorization: Token {{ nautobot.token }}
+        method: POST
+        status_code: 200
+        url: http://{{ nautobot.url }}/api/extras/graphql-queries/{{ nautobot.graphql_uuid }}/run/
+        validate_certs: "no"
+      register: graphql
+
+    # --------------------------------------------------------------------------------------------
+    # Register configuration context as new object `fw_config`
+    # --------------------------------------------------------------------------------------------
+    - name: Store the configuration context from Nautobot into a new object `fw_config`
+      set_fact:
+        fw_config: '{{ graphql["json"]["data"]["device"]["config_context"] }}'
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: tags
+    # --------------------------------------------------------------------------------------------
+    - name: Create tags with data sourced from GitHub (platform_panos.yaml)
+      panos_tag_object:
+        color: "{{ item.color }}"
+        comments: "{{ item.comments | default('') }}"
+        name: "{{ item.name }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["tag"] }}'
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: application groups
+    # --------------------------------------------------------------------------------------------
+    - name: Create application group with data sourced from GitHub (platform_panos.yaml)
+      panos_application_group:
+        name: "{{ item.name }}"
+        value: "{{ item.members }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["application_group"] }}'
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: address objects of type "ip-netmask"
+    # --------------------------------------------------------------------------------------------
+    - name: Create address objects of type "ip-netmask"
+      panos_address_object:
+        description: "{{ item.description }}"
+        name: "{{ item.name }}"
+        tag: "{{ item.tag }}"
+        value: "{{ item.ip_netmask }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["address"] }}'
+      when: item.ip_netmask is defined
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: address objects of type "ip-range"
+    # --------------------------------------------------------------------------------------------
+    - name: Create address objects of type "ip-range"
+      panos_address_object:
+        address_type: ip-range
+        description: "{{ item.description }}"
+        name: "{{ item.name }}"
+        tag: "{{ item.tag }}"
+        value: "{{ item.ip_range }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["address"] }}'
+      when: item.ip_range is defined
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: address objects of type "fqdn"
+    # --------------------------------------------------------------------------------------------
+    - name: Create address objects of type "fqdn"
+      panos_address_object:
+        address_type: fqdn
+        description: "{{ item.description }}"
+        name: "{{ item.name }}"
+        tag: "{{ item.tag }}"
+        value: "{{ item.fqdn }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["address"] }}'
+      when: item.fqdn is defined
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: address groups
+    # --------------------------------------------------------------------------------------------
+    - name: create address object groups
+      panos_address_group:
+        name: "{{ item.name }}"
+        static_value: "{{ item.static }}"
+        tag: "{{ item.tag }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["address_group"] }}'
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: services
+    # --------------------------------------------------------------------------------------------
+    - name: create services
+      panos_service_object:
+        description: "{{ item.description }}"
+        destination_port: "{{ item.protocol.tcp.port }}"
+        name: "{{ item.name }}"
+        tag: "{{ item.tag }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["service"] }}'
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: Layer3 network interfaces
+    # --------------------------------------------------------------------------------------------
+    - name: configure L3 interfaces
+      panos_interface:
+        enable_dhcp: false
+        if_name: "{{ item.name }}"
+        ip:
+          - "{{ item.address }}"
+        mode: "{{ item.mode }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["interfaces"] }}'
+      when: item.mode == "layer3"
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: Tap network interfaces
+    # --------------------------------------------------------------------------------------------
+    - name: configure tap interfaces
+      panos_interface:
+        if_name: "{{ item.name }}"
+        mode: tap
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["interfaces"] }}'
+      when: item.mode == "tap"
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: Tunnel network interfaces
+    # --------------------------------------------------------------------------------------------
+    - name: configure tunnel interfaces
+      panos_tunnel:
+        if_name: "{{ item.name }}"
+        ip:
+          - "{{ item.address }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["interfaces"] }}'
+      when: item.mode == "tunnel"
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: Loopback network interfaces
+    # --------------------------------------------------------------------------------------------
+    - name: configure loopback interfaces
+      panos_loopback_interface:
+        if_name: "{{ item.name }}"
+        ip:
+          - "{{ item.address }}"
+        vsys: vsys1
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["interfaces"] }}'
+      when: item.mode == "loopback"
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: Layer 3 security zones
+    # --------------------------------------------------------------------------------------------
+    - name: create layer 3 security zones
+      panos_zone:
+        enable_userid: true
+        interface: "{{ item.network.layer3 }}"
+        mode: layer3
+        zone: "{{ item.name }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["zone"] }}'
+      when: item.network.layer3 is defined
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: Tap security zones
+    # --------------------------------------------------------------------------------------------
+    - name: create tap security zones
+      panos_zone:
+        enable_userid: true
+        interface: "{{ item.network.tap }}"
+        mode: tap
+        zone: "{{ item.name }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["zone"] }}'
+      when: item.network.tap is defined
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: Security Group Profile
+    # --------------------------------------------------------------------------------------------
+    - name: create security group profile
+      panos_pg:
+        pg_name: "{{ item.name }}"
+        virus: "{{ item.virus }}"
+        spyware: "{{ item.spyware }}"
+        vulnerability: "{{ item.vulnerability }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["security_profile"] }}'
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: EDL
+    # --------------------------------------------------------------------------------------------
+    - name: configure external dynamic lists
+      panos_config_element:
+        xpath: "/config/devices/entry/vsys/entry/external-list"
+        element: |
+          "<entry name='{{ item.name }}'>
+              <type>
+                  <ip>
+                      <recurring>
+                          <five-minute/>
+                      </recurring>
+                      <certificate-profile>Redtail</certificate-profile>
+                      <url>'{{ item.url }}'</url>
+                  </ip>
+              </type>
+          </entry>"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["edl"] }}'
+      ignore_errors: true
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: Security policies
+    # --------------------------------------------------------------------------------------------
+    - name: create security policies
+      panos_security_rule:
+        action: "{{ item.action }}"
+        application: "{{ item.application }}"
+        category: "{{ item.category }}"
+        description: "{{ item.description }}"
+        destination_ip: "{{ item.destination }}"
+        destination_zone: "{{ item.to }}"
+        group_tag: "{{ item.group_tag }}"
+        group_profile: "{{ item.profile_setting.group }}"
+        # hip_profiles: "{{ item.source_hip }}"
+        log_setting: "{{ item.log_setting | default('None')}}"
+        rule_name: "{{ item.name }}"
+        service: "{{ item.service }}"
+        source_ip: "{{ item.source }}"
+        source_user: "{{ item.source_user }}"
+        source_zone: "{{ item.from }}"
+        tag_name: "{{ item.tag }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      register: results
+      loop: '{{ fw_config["security"] }}'
+
+    # --------------------------------------------------------------------------------------------
+    # PAN-OS configuration: NAT
+    # --------------------------------------------------------------------------------------------
+    - name: create NAT policies for static translations
+      panos_nat_rule2:
+        description: "{{ item.description }}"
+        destination_addresses: "{{ item.destination }}"
+        from_zones: "{{ item.from }}"
+        group_tag: "{{ item.group_tag }}"
+        name: "{{ item.name }}"
+        nat_type: "ipv4"
+        service: "{{ item.service }}"
+        source_addresses: "{{ item.source }}"
+        source_translation_static_bi_directional: True
+        source_translation_static_translated_address: "{{ item.source_translation.static_ip.translated_address }}"
+        source_translation_type: "static-ip"
+        to_zones: "{{ item.to }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["nat"] }}'
+      when: item.source_translation.static_ip is defined
+
+    - name: create NAT policies for dynamic port translation
+      panos_nat_rule2:
+        name: "{{ item.name }}"
+        description: "{{ item.description }}"
+        nat_type: "ipv4"
+        from_zones: "{{ item.from }}"
+        to_zones: "{{ item.to }}"
+        to_interface: "{{ item.source_translation.dynamic_ip_and_port.interface_address.interface }}"
+        service: "{{ item.service }}"
+        source_addresses: "{{ item.source }}"
+        destination_addresses: "{{ item.destination }}"
+        source_translation_type: "dynamic-ip-and-port"
+        source_translation_address_type: "interface-address"
+        source_translation_interface: "{{ item.source_translation.dynamic_ip_and_port.interface_address.interface }}"
+        provider:
+          api_key: "{{ panos.token }}"
+          ip_address: "{{ ansible_host }}"
+          username: "{{ panos.username }}"
+      loop: '{{ fw_config["nat"] }}'
+      when: item.source_translation.dynamic_ip_and_port is defined
