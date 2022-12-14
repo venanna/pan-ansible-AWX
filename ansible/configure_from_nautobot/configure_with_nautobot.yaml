@@ -81,9 +81,9 @@
         comments: "{{ item.comments | default('') }}"
         name: "{{ item.name }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["tag"] }}'
 
     # --------------------------------------------------------------------------------------------
@@ -94,9 +94,9 @@
         name: "{{ item.name }}"
         value: "{{ item.members }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["application_group"] }}'
 
     # --------------------------------------------------------------------------------------------
@@ -109,9 +109,9 @@
         tag: "{{ item.tag }}"
         value: "{{ item.ip_netmask }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["address"] }}'
       when: item.ip_netmask is defined
 
@@ -126,9 +126,9 @@
         tag: "{{ item.tag }}"
         value: "{{ item.ip_range }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["address"] }}'
       when: item.ip_range is defined
 
@@ -143,9 +143,9 @@
         tag: "{{ item.tag }}"
         value: "{{ item.fqdn }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["address"] }}'
       when: item.fqdn is defined
 
@@ -158,9 +158,9 @@
         static_value: "{{ item.static }}"
         tag: "{{ item.tag }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["address_group"] }}'
 
     # --------------------------------------------------------------------------------------------
@@ -173,9 +173,9 @@
         name: "{{ item.name }}"
         tag: "{{ item.tag }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["service"] }}'
 
     # --------------------------------------------------------------------------------------------
@@ -189,9 +189,9 @@
           - "{{ item.address }}"
         mode: "{{ item.mode }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["interfaces"] }}'
       when: item.mode == "layer3"
 
@@ -203,9 +203,9 @@
         if_name: "{{ item.name }}"
         mode: tap
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["interfaces"] }}'
       when: item.mode == "tap"
 
@@ -218,9 +218,9 @@
         ip:
           - "{{ item.address }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["interfaces"] }}'
       when: item.mode == "tunnel"
 
@@ -234,9 +234,9 @@
           - "{{ item.address }}"
         vsys: vsys1
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["interfaces"] }}'
       when: item.mode == "loopback"
 
@@ -250,9 +250,9 @@
         mode: layer3
         zone: "{{ item.name }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["zone"] }}'
       when: item.network.layer3 is defined
 
@@ -266,9 +266,9 @@
         mode: tap
         zone: "{{ item.name }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["zone"] }}'
       when: item.network.tap is defined
 
@@ -282,9 +282,9 @@
         spyware: "{{ item.spyware }}"
         vulnerability: "{{ item.vulnerability }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["security_profile"] }}'
 
     # --------------------------------------------------------------------------------------------
@@ -306,9 +306,9 @@
               </type>
           </entry>"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       loop: '{{ fw_config["edl"] }}'
       ignore_errors: true
 
@@ -334,8 +334,8 @@
         source_zone: "{{ item.from }}"
         tag_name: "{{ item.tag }}"
         provider:
-          api_key: "{{ panos_api_token }}"
+          api_key: "{{ panos.token }}"
           ip_address: "{{ ansible_host }}"
-          username: "{{ panos_username }}"
+          username: "{{ panos.username }}"
       register: results
       loop: '{{ fw_config["security"] }}'
