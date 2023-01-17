@@ -1,0 +1,6 @@
+routes:
+  static:
+    - name: "Default Route"
+      destination: "0.0.0.0/0"
+      nexthop: "Default-Gateway"
+      vr: "default"
