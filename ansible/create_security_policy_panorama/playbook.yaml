@@ -11,7 +11,7 @@
 
   tasks:
     - name: Add test pre-rule to Panorama
-      paloaltonetworks.panos.panos_security_rule:
+      panos_security_rule:
         provider:
           ip_address: "{{ ansible_host }}"
           username: "{{ panorama_username }}"
@@ -37,9 +37,7 @@
         hip_profiles:
           - "any"
         tag_name:
-          - "redtail"
-          - "dmz"
-          - "ansible"
+          - "Outbound Web"
         action: "allow"
         device_group: "branch"
         commit: False

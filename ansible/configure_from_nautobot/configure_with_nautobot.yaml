@@ -301,7 +301,7 @@
                           <five-minute/>
                       </recurring>
                       <certificate-profile>Redtail</certificate-profile>
-                      <url>'{{ item.url }}'</url>
+                      <url>{{ item.url }}</url>
                   </ip>
               </type>
           </entry>"
