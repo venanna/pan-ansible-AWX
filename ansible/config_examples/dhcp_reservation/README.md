@@ -2,16 +2,11 @@
 
 ![Palo Alto Networks](../../../images/paloaltonetworks_logo.png)
 
-This playbook automates the configuration of DHCP reservations for devices on your network using a Palo Alto Networks firewall. It simplifies the process of adding, removing, or updating DHCP reservations, making the network management more efficient and less error-prone.
+This playbook automates the configuration of DHCP reservations for devices on your network using a Palo Alto Networks firewall. It simplifies the process of adding, removing, or updating DHCP reservations, making network management more efficient and less error-prone.
 
 ## Installation
 
-  1. [Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/index.html) on your local machine.
-  2. Clone or download this repository to your local drive.
-  3. Run `ansible-galaxy install -r requirements.yml` inside this directory to install the required Ansible roles.
-  4. Update the `inventory.yaml` file with the appropriate information for your Palo Alto Networks firewall.
-  5. Update the variable files inside the `group_vars` directory with your specific configuration details.
-  6. Run `ansible-playbook playbook.yaml` inside this directory to execute the playbook.
+Please follow the instructions in the [project's root README.md file](../../../README.md) to set up your environment using either Docker containers or a virtual environment.
 
 ## Customizing DHCP Reservations
 
@@ -34,16 +29,61 @@ Example:
         template: "BranchFirewalls"
     ```
 
-Add or modify the entries in the dhcp_reservations list to suit your requirements, and then run the playbook to apply the changes.
+## Working with Ansible Vault
+
+It's important to secure sensitive information such as API keys and usernames. This project uses Ansible Vault to encrypt the group_vars/vault.yaml file, which contains the Panorama username and API token.
+
+This file does not ship with the project, but there is an example file that you can should edit and rename to create your own. To copy the example and encrypt the file, use the following command:
+
+    ```bash
+    cp group_vars/vault.yaml.example group_vars/vault.yaml
+    ansible-vault encrypt group_vars/vault.yaml
+    ```
+
+You'll be prompted to enter a password. Make sure to remember this password, as you'll need it to decrypt the file or edit its contents. To edit the encrypted file, use:
+
+    ```bash
+    ansible-vault edit group_vars/vault.yaml
+    ```
+
+To decrypt the file, use:
+
+    ```bash
+    ansible-vault decrypt group_vars/vault.yaml
+    ```
+
+When running the playbook, you'll need to provide the vault password using the --ask-vault-pass flag:
+
+    ```bash
+    ansible-playbook playbook.yaml --ask-vault-pass
+    ```
+
+## How the Playbook Works
+
+The playbook leverages the paloaltonetworks.panos Ansible collection to interact with the Palo Alto Networks firewall. The playbook.yaml file imports tasks from the tasks directory and applies them sequentially.
+
+The main task, tasks/dhcp_reservations.yaml, iterates through the list of DHCP reservations specified in the group_vars/dhcp.yaml file. For each reservation, it uses the paloaltonetworks.panos.panos_config_element module to create an address object and configure the DHCP reservation on the firewall.
+
+```yaml
+- name: DHCP reservations
+  paloaltonetworks.panos.panos_config_element:
+    provider:
+      ip_address: "{{ ansible_host }}"
+      username: "{{ panorama_username }}"
+      api_key: "{{ panorama_api_token }}"
+    xpath: "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{{ item.template }}']/config/devices/entry[@name='localhost.localdomain']/network/dhcp/interface/entry[@name='{{ item.interface }}']/server/reserved"
+    element: |
+      "<entry name='{{ item.ip_address }}'>
+        <mac>{{ item.mac }}</mac>
+        <description>{{ item.description }}</description>
+      </entry>"
+  loop: "{{ dhcp_reservations }}"
+```
 
 ## Contributing
 
-If you find any issues or have suggestions for improvements, feel free to open an issue or submit a pull request.
+Please read [CONTRIBUTING.md](../../../CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
-## License
+## Authors
 
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-## Author
-
-This project was created by Calvin Remsburg.
+- **Calvin Remsburg (@cdot65)** - _Initial work_
