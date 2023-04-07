@@ -1,0 +1,13 @@
+---
+nautobot:
+    # the GitHub repo UUID from Nautobot
+    git_repo: "9607d365-4867-4552-a057-a28754aa1f24"
+
+    # the GraphQL UUID from Nautobot
+    graphql_uuid: "61fb0080-a3a5-439d-8a06-ec8c63266f26"
+
+    # API token
+    token: "mynautobottoken"
+
+    # Nautobot URL
+    url: "nautobot.redtail.com:8080"

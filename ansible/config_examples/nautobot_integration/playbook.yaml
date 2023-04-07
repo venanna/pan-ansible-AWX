@@ -1,0 +1,12 @@
+---
+- hosts: "{{ firewall_device }}"
+  connection: local
+  become: false
+  gather_facts: false
+  collections:
+    - paloaltonetworks.panos
+    - ansible.utils
+
+  roles:
+    - nautobot
+    - firewall

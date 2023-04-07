@@ -79,23 +79,26 @@ PWD = os.getcwd()
 @task(optional=["arm", "x86"])
 def build(context, arm=None, x86=None):
     """Build our Container images."""
-    if CPU_ARCHITECTURE == "ARM" or arm:
-        context.run(
-            f"{CONTAINER_RUNTIME} build \
-                -t {CONTAINER_IMG}:{ARM_TAG}-{VERSION} \
-                docker/arm",
-        )
-    elif CPU_ARCHITECTURE == "x86" or x86:
+    if CPU_ARCHITECTURE == "x86" or x86:
         context.run(
             f"{CONTAINER_RUNTIME} build \
                 -t {CONTAINER_IMG}:{X86_TAG}-{VERSION} \
-                .",
+                -f docker/Dockerfile \
+                docker",
+        )
+    elif CPU_ARCHITECTURE == "ARM" or arm:
+        context.run(
+            f"{CONTAINER_RUNTIME} build \
+                -t {CONTAINER_IMG}:{ARM_TAG}-{VERSION} \
+                -f docker/Dockerfile.arm \
+                docker",
         )
     else:
         context.run(
             f"{CONTAINER_RUNTIME} build \
                 -t {CONTAINER_IMG}:{X86_TAG}-{VERSION} \
-                .",
+                -f docker/Dockerfile \
+                docker",
         )
 
 
@@ -111,7 +114,7 @@ def shell(context, arm=None, x86=None):
                 -v {PWD}/docker/.zshrc:/home/ansible/.zshrc \
                 -v {PWD}/ansible/playbooks:/home/ansible/playbooks \
                 -w /home/ansible/playbooks \
-                {CONTAINER_IMG}:{ARM_TAG}-{VERSION} \
+                {CONTAINER_IMG}:{X86_TAG}-{VERSION} \
                 /bin/zsh",
             pty=True,
         )
@@ -132,35 +135,5 @@ def shell(context, arm=None, x86=None):
                 -w /home/ansible/ \
                 {CONTAINER_IMG}:{X86_TAG}-{VERSION} \
                 /bin/sh",
-            pty=True,
-        )
-
-
-# ---------------------------------------------------------------------------
-# Run playbook on localhost within container
-# ---------------------------------------------------------------------------
-@task(optional=["arm"])
-def ansible(context, arm=None):
-    """Run Ansible playbook."""
-    if CPU_ARCHITECTURE == "ARM" or arm:
-        context.run(
-            f"{CONTAINER_RUNTIME} run -it --rm \
-                -v {PWD}/ansible:/home/ansible \
-                -w /home/ansible/ \
-                {CONTAINER_IMG}:{ARM_TAG}-{VERSION} \
-                ansible-playbook hello.yaml \
-                --inventory inventory/localhost.yaml \
-                --verbose",
-            pty=True,
-        )
-    else:
-        context.run(
-            f"{CONTAINER_RUNTIME} run -it --rm \
-                -v {PWD}/ansible:/home/ansible \
-                -w /home/ansible/ \
-                {CONTAINER_IMG}:{X86_TAG}-{VERSION} \
-                ansible-playbook hello.yaml \
-                --inventory inventory/localhost.yaml \
-                --verbose",
             pty=True,
         )
