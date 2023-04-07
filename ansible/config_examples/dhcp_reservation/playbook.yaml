@@ -1,0 +1,13 @@
+---
+# CREATE DHCP RESERVATIONS WITHIN PANORAMA
+- hosts: panorama
+  connection: local
+  gather_facts: False
+  become: False
+  collections:
+    - paloaltonetworks.panos
+    - ansible.utils
+
+  tasks:
+    - name: Include DHCP reservation tasks
+      include_tasks: tasks/dhcp_reservations.yaml
