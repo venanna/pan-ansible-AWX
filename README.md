@@ -39,6 +39,8 @@ There are two ways to set up your environment to execute the Ansible playbooks i
 2. Run `invoke build` to build the Docker container images for all the projects in the "ansible" directory
 3. Run `invoke shell` to access the shell and then navigate to a specific project's directory to execute the Ansible playbook
 
+![Invoke Build](images/01_invoke_build.png)
+
 ### Creating Python Virtual Environments
 
 1. Install Python virtualenv: `pip3 install virtualenv`
@@ -54,6 +56,8 @@ There are two ways to set up your environment to execute the Ansible playbooks i
 1. Access the container shell: `invoke shell`
 2. Navigate to the Ansible project directory: `cd /ansible/config_examples/<project-name>`
 3. Run the Ansible playbook: `ansible-playbook <playbook-name>.yml`
+
+![Invoke Shell](images/02_invoke_shell.png)
 
 ### Creating Python Virtual Environments and Executing Ansible Within the Virtual Environment
 
