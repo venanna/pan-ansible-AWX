@@ -1,6 +1,6 @@
 # 🚀 Palo Alto Networks Ansible Projects 🚀
 
-![Palo Alto Networks Logo](paloaltonetworks_logo.png)
+![Palo Alto Networks Logo](images/paloaltonetworks_logo.png)
 
 A collection of Ansible playbooks and Docker containers to automate and manage Palo Alto Networks devices.
 
@@ -37,11 +37,11 @@ There are two ways to set up your environment to execute the Ansible playbooks i
 
 1. Install Invoke on your local system: `pip install invoke`
 2. Run `invoke build` to build the Docker container images for all the projects in the "ansible" directory
-3. Run `invoke shell --project <project-name>` to access the shell of a specific project's container
+3. Run `invoke shell` to access the shell and then navigate to a specific project's directory to execute the Ansible playbook
 
 ### Creating Python Virtual Environments
 
-1. Install Python virtualenv: `pip install virtualenv`
+1. Install Python virtualenv: `pip3 install virtualenv`
 2. Create a virtual environment: `virtualenv venv`
 3. Activate the virtual environment:
    - For Linux/Mac: `source venv/bin/activate`
@@ -59,7 +59,8 @@ There are two ways to set up your environment to execute the Ansible playbooks i
 
 1. Create and activate the Python virtual environment (follow the steps in [Creating Python Virtual Environments](#creating-python-virtual-environments))
 2. Install Ansible in the virtual environment: `pip install ansible`
-3. Run the Ansible playbook: `ansible-playbook ansible/<project-name>/<playbook-name>.yml`
+3. Navigate to the Ansible project directory: `cd ansible/<project-type>/<project-name>`
+4. Run the Ansible playbook: `ansible-playbook <playbook-name>.yml`
 
 ## 🔬 Technical Deep Dive
 
