@@ -1,70 +1,90 @@
-# security_rule_export 🚀
+# Panorama Security Rule Base Export Example
 
-This project retrieves a list of security rules from Panorama and their associated Security Profile Groups (if any) and exports the data to a CSV file.
+![Palo Alto Networks](../../../images/paloaltonetworks_logo.png)
 
-## Table of Contents 📚
+This playbook automates the retrieval of security pre-rule base and post-rule base configurations from a Panorama instance. The security rule base configurations are then parsed and exported to a CSV file.
 
-- [security\_rule\_export 🚀](#security_rule_export-)
-  - [Table of Contents 📚](#table-of-contents-)
-  - [Overview 🌐](#overview-)
-  - [Execution ⚙️](#execution-️)
-    - [Build and Enter the Container 🖥️](#build-and-enter-the-container-️)
-    - [Screenshots 📷](#screenshots-)
-  - [Technical Deep Dive 🔎](#technical-deep-dive-)
+## Installation
 
-## Overview 🌐
+Please follow the instructions in the [project's root README.md file](../../../README.md) to set up your environment using either Docker containers or a virtual environment.
 
-This project retrieves a list of security rules from Panorama and their associated Security Profile Groups (if any) and exports the data to a CSV file.
+## Customizing the Configuration
 
-This playbook is expected to be ran within the project's Docker container image, but could be executed locally if you feel comfortable setting the environment; the Dockerfile and `tasks.py` file can be used to provide guidance on steps required.
+The configuration is generated based on the contents of the `group_vars` directories for variables. The only YAML file here is used to store the Panorama username and API token. Modify the files in this directory to customize the configuration for your Panorama instance.
 
-## Execution ⚙️
+Example:
 
-### Build and Enter the Container 🖥️
+```yaml
+---
+panorama_username: "example_username"
+panorama_api_token: "example_apitoken"
+```
 
-If you have not already done so, please follow the steps below to build and enter the container.
+## Working with Ansible Vault
 
-1. Install [Invoke](https://www.pyinvoke.org/):
+It's important to secure sensitive information such as API keys and usernames. This project uses Ansible Vault to encrypt the group_vars/vault.yaml file, which contains the Panorama username and API token.
 
-    This will be a one-time installation on your local machine and is required to build and enter the container
+This file does not ship with the project, but there is an example file that you can should edit and rename to create your own. To copy the example and encrypt the file, use the following command:
 
-    ```bash
-    pip install invoke
-    ```
+```bash
+cp group_vars/vault.yaml.example group_vars/vault.yaml
+ansible-vault encrypt group_vars/vault.yaml
+```
 
-2. Use Invoke's "build" function found within `tasks.py` file to build the container:
+You'll be prompted to enter a password. Make sure to remember this password, as you'll need it to decrypt the file or edit its contents. To edit the encrypted file, use:
 
-    ```bash
-    invoke build
-    ```
+```yaml
+ansible-vault edit group_vars/vault.yaml
+```
 
-3. Use Invoke's "shell" function found within `tasks.py` file to enter the container:
+To decrypt the file, use:
 
-    ```bash
-    invoke shell
-    ```
+```yaml
+ansible-vault decrypt group_vars/vault.yaml
+```
 
-4. Once inside the container, you can change the directory to a playbook of your choice and run the playbook:
+When running the playbook, you'll need to provide the vault password using the --ask-vault-pass flag:
 
-    ```bash
-    cd security_rule_export
-    ansible-playbook security_rule_export.yml --ask-vault-pass
-    ```
+```yaml
+ansible-playbook playbook.yaml --ask-vault-pass
+```
 
-### Screenshots 📷
+## Inventory
 
-![invoke build](../../images/01_invoke_build.png)
-![invoke shell](../../images/02_invoke_shell.png)
-![playbook output](../../images/03_playbook_output.png)
+The inventory.yaml file specifies the Panorama instance that the playbook will be applied to. You can add or remove Panorama instances from this file as needed.
 
-## Technical Deep Dive 🔎
+Example:
 
-The security_rule_export project leverages a Dockerfile to create a container with the necessary libraries and tools installed. The Dockerfile includes the following steps:
+```yaml
+# inventory.yaml
+all:
+  children:
+    panorama:
+      hosts:
+        redtail:
+          ansible_host: panorama.redtail.com
+```
 
-1. Install the required dependencies for PAN-OS SDK, Poetry, and Ansible.
+## Running the Playbook
 
-2. Set up the user environment and install the Python packages.
+To run the playbook, execute the following command:
 
-3. Configure the shell with Oh My Zsh and activate the Poetry virtual environment upon entering the container.
+```bash
+ansible-playbook playbook.yaml
+```
 
-For more details, please refer to the comments within the `Dockerfile` and `tasks.py` files.
+## How the Playbook Works
+
+The playbook runs the following tasks:
+
+1. **Retrieve security pre-rule base** - Retrieves security pre-rule base configuration from the Panorama instance.
+2. **Retrieve security post-rule base** - Retrieves security post-rule base configuration from the Panorama instance.
+3. **Parse data and write to CSV file with Jinja2** - Parses the retrieved data and writes it to a CSV file using a Jinja2 template.
+
+## Contributing
+
+Please read [CONTRIBUTING.md](../../../CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Authors
+
+- **Calvin Remsburg (@cdot65)** - _Initial work_
