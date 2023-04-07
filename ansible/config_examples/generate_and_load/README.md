@@ -1,12 +1,12 @@
 # Generate and Load Ansible Playbook
 
-![Palo Alto Networks](../../../../images/paloaltonetworks_logo.png)
+![Palo Alto Networks](../../../images/paloaltonetworks_logo.png)
 
 This playbook automates the generation and loading of a full XML configuration for a Palo Alto Networks firewall using Jinja2 templates. The configuration is pushed to the firewall and loaded into the candidate configuration.
 
 ## Installation
 
-Please follow the instructions in the [project's root README.md file](../../../../README.md) to set up your environment using either Docker containers or a virtual environment.
+Please follow the instructions in the [project's root README.md file](../../../README.md) to set up your environment using either Docker containers or a virtual environment.
 
 ## Customizing the Configuration
 
@@ -30,7 +30,6 @@ deviceconfig:
     - type: "local-panorama"
       host: "hdq-pan-01.redtail.com"
 ```
-
 
 ## Working with Ansible Vault
 
