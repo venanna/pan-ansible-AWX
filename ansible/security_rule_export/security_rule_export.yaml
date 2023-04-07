@@ -28,9 +28,9 @@
         details: True
       register: post_rule_base
 
-    - name: print pre_rule_base
-      debug:
-        msg: "{{ pre_rule_base }}"
+    # - name: print pre_rule_base
+    #   debug:
+    #     msg: "{{ pre_rule_base }}"
 
     # - name: print post_rule_base
     #   debug:
@@ -39,4 +39,4 @@
     - name: Parse data and write to CSV file with Jinja2
       template:
         src: "./templates/security_profile_group.j2"
-        dest: "./test.csv"
+        dest: "./rules.csv"
