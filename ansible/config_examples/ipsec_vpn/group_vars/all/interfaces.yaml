@@ -1,4 +1,4 @@
-ifaces:
+ethernet_interfaces:
   - name: "ethernet1/1"
     mode: "layer3"
     ip: ["WAN-IP-Prefix"]
@@ -17,7 +17,7 @@ ifaces:
     dhcp: false
     zone: "DMZ"
 
-tunnels:
+tunnel_interfaces:
   - name: "tunnel.10"
     ip: ["SAN-DAL-Tunnel-IP-Prefix"]
     zone: "VPN"
