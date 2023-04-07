@@ -1,41 +1,103 @@
-# Configuration Generator and Loader Ansible Playbook
+# Generate and Load Ansible Playbook
 
-![Palo Alto Networks](../../../images/paloaltonetworks_logo.png)
+![Palo Alto Networks](../../../../images/paloaltonetworks_logo.png)
 
-This Ansible playbook automates the generation of a full XML configuration using Jinja2 templates for Palo Alto Networks firewalls. It then uploads the configuration to the firewall through the REST API and loads it into the candidate configuration.
+This playbook automates the generation and loading of a full XML configuration for a Palo Alto Networks firewall using Jinja2 templates. The configuration is pushed to the firewall and loaded into the candidate configuration.
 
 ## Installation
 
-1. [Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/index.html) on your local machine.
-2. Clone or download this repository to your local drive.
-3. Update the `inventory.yaml` file with the appropriate information for your Palo Alto Networks firewall.
-4. Update the variable files inside the `host_vars` directory with your specific configuration details.
-5. Run `ansible-playbook configuration.yaml` inside this directory to execute the playbook.
+Please follow the instructions in the [project's root README.md file](../../../../README.md) to set up your environment using either Docker containers or a virtual environment.
 
 ## Customizing the Configuration
 
-To customize the configuration, modify the variable files inside the `host_vars` directory. These files contain variables that will be used by the Jinja2 templates to generate the final XML configuration.
+The configuration is generated based on the contents of the `host_vars` directory. Each YAML file within this directory contains settings that are used to build the configuration. Modify the files in this directory to customize the configuration for your firewall.
 
-Here is a brief overview of some of the variable files:
+Example:
 
-- `vault.yaml`: Contains the API token for accessing the firewall's REST API.
-- `deviceconfig.yaml`: Contains device configuration settings like timezone, hostname, IP address, netmask, gateway, DNS, and Panorama information.
-- `network.yaml`: Contains network interface configuration.
-- `paths.yaml`: Contains local paths for directories and files.
-- `users.yaml`: Contains user accounts and their permissions.
-- `vr.yaml`: Contains virtual router configuration settings.
-- `vsys.yaml`: Contains virtual system configuration settings like zones, addresses, and interfaces.
+```yaml
+# host_vars/dal-vfw-01/deviceconfig.yaml
+---
+deviceconfig:
+  timezone: "US/Central"
+  hostname: "{{ ansible_host }}"
+  ip_address: "10.60.0.44"
+  netmask: "255.255.0.0"
+  gateway: "10.60.0.1"
+  dns:
+    primary: "10.30.0.50"
+    secondary: "10.30.0.51"
+  panorama:
+    - type: "local-panorama"
+      host: "hdq-pan-01.redtail.com"
+```
 
-Modify these files according to your requirements and then run the playbook to generate and load the configuration.
+
+## Working with Ansible Vault
+
+It's important to secure sensitive information such as API keys and usernames. This project uses Ansible Vault to encrypt the group_vars/vault.yaml file, which contains the Panorama username and API token.
+
+This file does not ship with the project, but there is an example file that you can should edit and rename to create your own. To copy the example and encrypt the file, use the following command:
+
+```bash
+cp group_vars/vault.yaml.example group_vars/vault.yaml
+ansible-vault encrypt group_vars/vault.yaml
+```
+
+You'll be prompted to enter a password. Make sure to remember this password, as you'll need it to decrypt the file or edit its contents. To edit the encrypted file, use:
+
+```bash
+ansible-vault edit group_vars/vault.yaml
+```
+
+To decrypt the file, use:
+
+```bash
+ansible-vault decrypt group_vars/vault.yaml
+```
+
+When running the playbook, you'll need to provide the vault password using the --ask-vault-pass flag:
+
+```bash
+ansible-playbook playbook.yaml --ask-vault-pass
+```
+
+## Inventory
+
+The inventory.yaml file specifies the firewalls that the playbook will be applied to. You can add or remove firewalls from this file as needed.
+
+Example:
+
+```yaml
+# inventory.yaml
+all:
+  children:
+    firewalls:
+      hosts:
+        dal-vfw-01:
+```
+
+## Running the Playbook
+
+To run the playbook, execute the following command:
+
+```bash
+ansible-playbook main.yaml
+```
+
+## How the Playbook Works
+
+The playbook imports tasks from the roles directory and applies them sequentially:
+
+1. The directories role creates local directories to hold configuration files.
+2. The build_config role uses Jinja2 templates to generate the firewall configuration, piece by piece.
+3. The assemble role assembles a full configuration from the parts created in the previous step.
+4. The playbook uploads the full configuration to the firewall through the REST API.
+5. The playbook loads the generated configuration into the candidate configuration on the firewall.
 
 ## Contributing
 
-If you find any issues or have suggestions for improvements, feel free to open an issue or submit a pull request.
+Please read [CONTRIBUTING.md](../../../CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
-## License
+## Authors
 
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-## Author
-
-This project was created by Calvin Remsburg.
+- **Calvin Remsburg (@cdot65)** - _Initial work_
