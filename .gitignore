@@ -1,3 +1,2 @@
-ansible/create_dhcp_reservation_panorama/group_vars/all/creds.yaml
-ansible/create_security_policy_panorama/group_vars/all/creds.yaml
 .vscode/settings.json
+**/creds.yaml
