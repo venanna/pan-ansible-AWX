@@ -1,0 +1,64 @@
+---
+# --------------------------------------------------------------------------------------------
+# Queue a sync operation from Nautobot to our config_context GitHub repo
+# --------------------------------------------------------------------------------------------
+- name: Nautobt sync with GitHub repository
+  ansible.builtin.uri:
+    headers:
+      Authorization: Token {{ nautobot.token }}
+    method: POST
+    status_code: 200
+    url: http://{{ nautobot.url }}/api/extras/git-repositories/{{ nautobot.git_repo }}/sync/
+    validate_certs: "no"
+
+# --------------------------------------------------------------------------------------------
+# Provide a ten second cooldown to allow the sync job to complete
+# --------------------------------------------------------------------------------------------
+- name: Pause for ten seconds to allow git sync to complete
+  ansible.builtin.pause:
+    seconds: 10
+
+# --------------------------------------------------------------------------------------------
+# Ask Nautobot for our firewall_device's UUID
+# --------------------------------------------------------------------------------------------
+- name: Retrieve our firewall's UUID from Nautobot
+  ansible.builtin.uri:
+    headers:
+      Authorization: Token {{ nautobot.token }}
+    method: GET
+    status_code: 200
+    url: http://{{ nautobot.url }}/api/dcim/devices/?name={{ firewall_device }}
+    validate_certs: "no"
+  register: device_info
+  run_once: true
+
+# --------------------------------------------------------------------------------------------
+# Store the interesting UUID value from `device_info` into `device_uuid`
+# --------------------------------------------------------------------------------------------
+- name: Store our firewall_device's UUID in a dedicated object named `device_uuid`
+  set_fact:
+    device_uuid: '{{ device_info["json"]["results"][0]["id"] }}'
+
+# --------------------------------------------------------------------------------------------
+# Ask Nautobot for everything it has in relation to our firewall_device
+# --------------------------------------------------------------------------------------------
+- name: Retrieve firewall_device configuration context and nautobot parameters
+  ansible.builtin.uri:
+    body:
+      variables:
+        device_id: "{{ device_uuid }}"
+    body_format: json
+    headers:
+      Authorization: Token {{ nautobot.token }}
+    method: POST
+    status_code: 200
+    url: http://{{ nautobot.url }}/api/extras/graphql-queries/{{ nautobot.graphql_uuid }}/run/
+    validate_certs: "no"
+  register: graphql
+
+# --------------------------------------------------------------------------------------------
+# Register configuration context as new object `fw_config`
+# --------------------------------------------------------------------------------------------
+- name: Store the configuration context from Nautobot into a new object `fw_config`
+  set_fact:
+    fw_config: '{{ graphql["json"]["data"]["firewall_device"]["config_context"] }}'

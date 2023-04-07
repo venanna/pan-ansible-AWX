@@ -8,6 +8,6 @@ nautobot:
 
     # API token
     token: "mynautobottoken"
-    
+
     # Nautobot URL
     url: "nautobot.redtail.com:8080"
