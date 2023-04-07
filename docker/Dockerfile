@@ -18,6 +18,8 @@ RUN apt-get update && \
         sudo \
         git \
         curl \
+        vim \
+        less \
         zsh && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

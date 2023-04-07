@@ -17,6 +17,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         sudo \
         git \
+        vim \
+        less \
         curl \
         zsh && \
     apt-get clean && \
