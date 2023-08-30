@@ -11,9 +11,6 @@
     - ansible.utils
 
   tasks:
-    - name: debug Python packages installed
-      ansible.builtin.shell: pip freeze
-
     - name: "Run commmand 'show interfaces' on firewalls running PAN-OS."
       paloaltonetworks.panos.panos_op:
         provider:
