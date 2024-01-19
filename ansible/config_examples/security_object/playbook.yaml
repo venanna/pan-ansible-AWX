@@ -13,10 +13,6 @@
   tasks:
     - name: "Validate that Panorama would allow us to create an object, check mode"
       panos_address_object:
-        provider:
-          ip_address: "{{ ansible_host }}"
-          username: "{{ ansible_user }}"
-          api_key: "{{ ansible_api_key }}"
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
