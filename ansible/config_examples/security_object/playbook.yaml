@@ -1,28 +1,16 @@
----
-- name: Validate, create, and commit PAN-OS object
-  hosts: FW
-  gather_facts: false
+#------------------------------------------------------------------------
+# CHECK TO SEE IF PANORAMA WOULD ALLOW ME TO CREATE A SECURITY OBJECT
+#------------------------------------------------------------------------
+- hosts: FW
+  connection: local
+  gather_facts: False
+  become: False
   collections:
     - paloaltonetworks.panos
     - ansible.utils
+
   tasks:
-    - name: Check Panorama operational mode
-      panos_op:
-        provider:
-          ip_address: "10.10.10.233"
-          username: "Gobi"
-          password: "ITCE_1234"
-        cmd: "show"
-        cmd_type: "op"
-        args:
-          cmd_str: "op state"
-      register: op_state_result
-
-    - name: Print Panorama operational mode
-      debug:
-        var: op_state_result.stdout_lines
-
-    - name: Create address object in commit mode
+    - name: "Validate that Panorama would allow us to create an object, check mode"
       panos_address_object:
         provider:
           ip_address: "10.10.10.233"
@@ -32,12 +20,10 @@
         address_type: "fqdn"
         value: "gaming.redtail.com"
         description: "Gaming PC"
-        vsys: "vsys1"
-        state: "present"
-        commit: true
-        port: 443
+      check_mode: yes
+      commit: true
       register: result
 
-    - name: Print the result
+    - name: "Print result to the console"
       debug:
-        var: result
+        msg: "{{ result }}"
