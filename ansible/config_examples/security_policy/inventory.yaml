@@ -1,5 +1,5 @@
 all:
   children:
-    panorama:
+    firewalls:
       hosts:
-        panorama.redtail.com:
+        10.10.10.233:
