@@ -1,21 +1,25 @@
 ---
-- name: Configure PAN-OS address object
-  hosts: FW
-  gather_facts: false
+#------------------------------------------------------------------------
+# CHECK TO SEE IF PANORAMA WOULD ALLOW ME TO CREATE A SECURITY OBJECT
+#------------------------------------------------------------------------
+- hosts: FW
+  connection: local
+  gather_facts: False
+  become: False
+  collections:
+    - paloaltonetworks.panos
+    - ansible.utils
+
   tasks:
-    - name: Create address object
+    - name: "Validate that Panorama would allow us to create an object, check mode"
       panos_address_object:
-        provider:
-          ip_address: "10.10.10.233"
-          username: "Gobi"
-          password: "ITCE_1234"
-        name: "Web_Server"
-        value: "192.168.1.10"
-        description: "Web Server Address Object"
-        tags:
-          - web
+        name: "Gaming-PC"
+        address_type: "fqdn"
+        value: "gaming.redtail.com"
+        description: "Gaming PC"
+      check_mode: yes
       register: result
 
-    - name: Print the result
+    - name: "Print result to the console"
       debug:
-        var: result
+        msg: "{{ result }}"
