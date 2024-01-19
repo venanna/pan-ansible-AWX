@@ -1,4 +1,4 @@
 all:
   hosts:
     firewall:
-      ansible_host: 10.10.10.233
+      ansible_host: 10.10.10.233 ansible_user=Gobi ansible_api_key=LUFRPT15TzJmMHZQQUwzT2lGTnZsVWEvdmpaVXdTZHc9YzFFRjZsQXhlaEJkN3B6aEdqelZ3YWlTRFJaOU5tM2U2UEEySUREVzh1WmdyTWZjTU9WWnh4YThHUzBFZGFpWQ==
