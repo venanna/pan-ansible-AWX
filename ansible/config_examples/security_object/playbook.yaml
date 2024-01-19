@@ -2,6 +2,9 @@
 - name: Validate, create, and commit PAN-OS object
   hosts: firewalls
   gather_facts: false
+  collections:
+    - paloaltonetworks.panos
+    - ansible.utils
   tasks:
     - name: Check Panorama operational mode
       panos_op:
@@ -30,7 +33,6 @@
         value: "gaming.redtail.com"
         description: "Gaming PC"
         vsys: "vsys1"
-        device_group: "shared"
         state: "present"
         commit: true
         port: 443
