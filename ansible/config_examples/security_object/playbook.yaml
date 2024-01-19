@@ -9,7 +9,15 @@
   collections:
     - paloaltonetworks.panos
     - ansible.utils
-
+  tasks:
+    - name: Set up PAN-OS provider
+      panos_provider:
+        provider:
+          ip_address: "10.10.10.233"
+          username: "Gobi"
+          password: "ITCE_1234"
+      register: result
+      
   tasks:
     - name: "Validate that Panorama would allow us to create an object, check mode"
       panos_address_object:
