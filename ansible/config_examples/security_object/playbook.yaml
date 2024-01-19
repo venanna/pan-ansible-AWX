@@ -15,8 +15,8 @@
       panos_address_object:
         provider:
           ip_address: "{{ ansible_host }}"
-          username: "{{ panorama_username }}"
-          api_key: "{{ panorama_api_token }}"
+          username: "{{ ansible_username }}"
+          api_key: "{{ ansible_api_key }}"
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
