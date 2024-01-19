@@ -15,7 +15,7 @@
       panos_address_object:
         provider:
           ip_address: "{{ ansible_host }}"
-          username: "{{ ansible_username }}"
+          username: "{{ ansible_user }}"
           api_key: "{{ ansible_api_key }}"
         name: "Gaming-PC"
         address_type: "fqdn"
