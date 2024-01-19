@@ -1,6 +1,6 @@
 ---
 - name: Validate, create, and commit PAN-OS object
-  hosts: firewalls
+  hosts: FW
   gather_facts: false
   collections:
     - paloaltonetworks.panos
