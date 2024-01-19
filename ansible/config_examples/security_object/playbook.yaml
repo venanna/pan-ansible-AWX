@@ -1,14 +1,10 @@
 ---
 - name: Configure PAN-OS address object
-  hosts: localhost
+  hosts: FW
   gather_facts: false
   tasks:
     - name: Create address object
       panos_address_object:
-        provider:
-          ip_address: "10.10.10.233"
-          username: "Gobi"
-          password: "ITCE_1234"
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
