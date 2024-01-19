@@ -16,7 +16,7 @@
         provider:
           ip_address: "{{ ansible_host }}"
           username: "{{ panorama_username }}"
-          api_key: "{{ panorama_api_token }}"
+          password: "{{ panorama_password }}"
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
