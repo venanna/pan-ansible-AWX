@@ -3,32 +3,41 @@
   connection: local
   gather_facts: False
   become: False
-  vars_prompt:
-    - name: "panorama_ip"
-      prompt: "Enter Panorama IP address"
-      private: no  # Set to yes if you want to hide the input (for sensitive information)
-    - name: "panorama_username"
-      prompt: "Enter Panorama username"
-      private: no
-    - name: "panorama_password"
-      prompt: "Enter Panorama password"
-      private: yes  # It's a good practice to hide the password
+  collections:
+    - paloaltonetworks.panos
+    - ansible.utils
 
   tasks:
-    
+    - name: "Validate that Panorama would allow us to create an object, check mode"
+      panos_address_object:
+        provider:
+          ip_address: "10.10.10.233"
+          username: "Gobi"
+          password: "ITCE_1234"
+        name: "Gaming-PC"
+        address_type: "fqdn"
+        value: "gaming.redtail.com"
+        description: "Gaming PC"
+      check_mode: yes
+      register: result
+
+    - name: "Print result to the console"
+      debug:
+        msg: "{{ result }}"
+
     - name: "Create address object in commit mode"
       panos_address_object:
         provider:
-          ip_address: "{{ panorama_ip }}"
-          username: "{{ panorama_username }}"
-          password: "{{ panorama_password }}"
+          ip_address: "10.10.10.233"
+          username: "Gobi"
+          password: "ITCE_1234"
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
         description: "Gaming PC"
         state: "present"
         commit: yes
-      when: not result.changed
+      #when: not result.changed  # Only execute if the check mode did not report changes
       register: commit_result
 
     - name: "Print commit result to the console"
