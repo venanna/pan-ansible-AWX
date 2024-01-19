@@ -11,7 +11,7 @@
     - ansible.utils
 
   tasks:
-    - name: "Validate that Panorama would allow us to create an object, check mode"
+    - name: "Validate that Firewall would allow us to create an object, check mode"
       panos_address_object:
         name: "Gaming-PC"
         address_type: "fqdn"
