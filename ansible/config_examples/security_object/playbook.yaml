@@ -14,9 +14,9 @@
     - name: "Validate that Panorama would allow us to create an object, check mode"
       panos_address_object:
         provider:
-          ip_address: "{{ ansible_host }}"
-          username: "{{ panorama_username }}"
-          password: "{{ panorama_password }}"
+          ip_address: "10.10.10.233"
+          username: "Gobi"
+          password: "ITCE_1234"
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
