@@ -37,7 +37,7 @@
         description: "Gaming PC"
         state: "present"
         commit: yes
-      when: not result.changed  # Only execute if the check mode did not report changes
+      #when: not result.changed  # Only execute if the check mode did not report changes
       register: commit_result
 
     - name: "Print commit result to the console"
