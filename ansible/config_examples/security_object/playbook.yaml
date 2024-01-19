@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------
 # CHECK TO SEE IF PANORAMA WOULD ALLOW ME TO CREATE A SECURITY OBJECT
 #------------------------------------------------------------------------
-- hosts: Firewall
+- hosts: FW
   connection: local
   gather_facts: False
   become: False
