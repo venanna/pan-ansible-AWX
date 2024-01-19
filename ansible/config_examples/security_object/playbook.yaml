@@ -14,9 +14,9 @@
     - name: "Validate that Panorama would allow us to create an object, check mode"
       panos_address_object:
         provider:
-          ip_address: "{{ ansible_host }}"
-          username: "{{ panorama_username }}"
-          api_key: "{{ panorama_api_token }}"
+          ip_address: "{{ 10.10.10.233 }}"
+          username: "{{ GObi }}"
+          api_key: "{{ LUFRPT15TzJmMHZQQUwzT2lGTnZsVWEvdmpaVXdTZHc9YzFFRjZsQXhlaEJkN3B6aEdqelZ3YWlTRFJaOU5tM2U2UEEySUREVzh1WmdyTWZjTU9WWnh4YThHUzBFZGFpWQ== }}"
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
