@@ -8,23 +8,6 @@
     - ansible.utils
 
   tasks:
-    - name: "Validate that Panorama would allow us to create an object, check mode"
-      panos_address_object:
-        provider:
-          ip_address: "10.10.10.233"
-          username: "Gobi"
-          password: "ITCE_1234"
-        name: "Gaming-PC"
-        address_type: "fqdn"
-        value: "gaming.redtail.com"
-        description: "Gaming PC"
-      check_mode: yes
-      register: result
-
-    - name: "Print result to the console"
-      debug:
-        msg: "{{ result }}"
-
     - name: "Create address object in commit mode"
       panos_address_object:
         provider:
@@ -34,7 +17,7 @@
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
-        description: "Gaming PC"
+        description: "Gaming PC2"
         state: "present"
         commit: yes
       #when: not result.changed  # Only execute if the check mode did not report changes
