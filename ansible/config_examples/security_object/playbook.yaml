@@ -17,14 +17,14 @@
           ip_address: "10.0.131.80"
           username: "vannapa"
           password: "Aira@143143143"
-          vsys: 'vsys1'
+        vsys: 'vsys1'
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
         description: "Gaming PC"
-      check_mode: yes
-      commit: yes 
-      register: result
+        check_mode: yes
+        commit: yes 
+      register: commit_result
 
     - name: "Print result to the console"
       debug:
