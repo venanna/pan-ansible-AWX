@@ -1,28 +1,21 @@
 ---
-- hosts: FW
-  connection: local
-  gather_facts: False
-  become: False
-  collections:
-    - paloaltonetworks.panos
-    - ansible.utils
+- name: Create Device Group in a Specific VSYS
+  hosts: [your_target_hosts]
+  gather_facts: no
 
   tasks:
-    - name: "Create address object in commit mode"
-      panos_address_object:
-        provider:
-          ip_address: "10.10.10.233"
-          username: "Gobi"
-          password: "ITCE_1234"
-        name: "Gaming-PC3"
-        address_type: "fqdn"
-        value: "gaming.redtail.com"
-        description: "Gaming PC3"
-        state: "present"
-        commit: yes
-      #when: not result.changed  # Only execute if the check mode did not report changes
-      register: commit_result
+    - name: Create a new device group in specified VSYS
+      panos_object:
+        ip_address: "10.0.131.80"
+        username: "vannapa"
+        password: "Aira143143143"
+        vsys: 'vsys1'  # Specify the VSYS here
+        object_type: 'address-group'
+        name: 'New_Device_Group'
+        description: 'Description of the device group'
+        # Additional required parameters...
+      register: result
 
-    - name: "Print commit result to the console"
+    - name: Display the result
       debug:
-        msg: "{{ commit_result }}"
+        var: result
