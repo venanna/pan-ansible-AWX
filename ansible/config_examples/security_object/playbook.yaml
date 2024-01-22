@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------
 # CHECK TO SEE IF PANORAMA WOULD ALLOW ME TO CREATE A SECURITY OBJECT
 #------------------------------------------------------------------------
-- hosts: panorama
+- hosts: 10.0.131.80
   connection: local
   gather_facts: False
   become: False
@@ -14,9 +14,9 @@
     - name: "Validate that Panorama would allow us to create an object, check mode"
       panos_address_object:
         provider:
-          ip_address: "{{ ansible_host }}"
-          username: "{{ panorama_username }}"
-          api_key: "{{ panorama_api_token }}"
+          ip_address: "10.0.131.80"
+          username: "vannapa"
+          password: "Aira@143143143"
         name: "Gaming-PC"
         address_type: "fqdn"
         value: "gaming.redtail.com"
