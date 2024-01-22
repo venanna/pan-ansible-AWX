@@ -14,7 +14,7 @@
           ip_address: "10.10.10.233"
           username: "Gobi"
           password: "ITCE_1234"
-        name: "Gaming-PC"
+        name: "Gaming-PC3"
         address_type: "fqdn"
         value: "gaming.redtail.com"
         description: "Gaming PC3"
