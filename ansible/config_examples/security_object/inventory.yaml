@@ -5,7 +5,7 @@ all:
         10.0.131.80:
           ansible_host: 10.0.131.80
           ansible_user: vannapa
-          ansible_api: LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ==
+          ansible_api_key: LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ==
           ansible_network_os: paloaltonetworks.panos.panos
           ansible_connection: local
           ansible_python_interpreter: "{{ ansible_playbook_python }}"
