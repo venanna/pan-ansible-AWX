@@ -23,7 +23,6 @@
         value: "gaming.redtail.com"
         description: "Gaming PC"
         check_mode: yes
-        commit: yes 
       register: commit_result
 
     - name: "Print result to the console"
