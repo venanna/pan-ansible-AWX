@@ -16,7 +16,7 @@
         provider:
           ip_address: "10.0.131.80"
           username: "vannapa"
-          api-key: "LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ=="
+          api_key: "LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ=="
         vsys: 'vsys1'
         name: "Gaming-PC"
         address_type: "fqdn"
