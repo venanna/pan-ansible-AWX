@@ -1,0 +1,10 @@
+    - name: Modify an object in a device template
+      paloaltonetworks.panos.panos_object:
+        ip_address: '10.0.131.80'
+        api_key: 'LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ=='
+        device_group: 'Your_Device_Group'
+        template: 'Your_Device_Template'
+        object_type: '10.0.123.90'
+        name: 'Your_Object_Name'
+        value: 'New_IP_or_Value'
+        commit: False
