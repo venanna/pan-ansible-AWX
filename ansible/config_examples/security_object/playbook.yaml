@@ -22,8 +22,8 @@
         address_type: "fqdn"
         value: "gaming.redtail.com"
         description: "Gaming PC"
-        check_mode: yes
-      register: commit_result
+      check_mode: yes
+      register: result
 
     - name: "Print result to the console"
       debug:
