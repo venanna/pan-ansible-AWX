@@ -5,11 +5,11 @@
   tasks:
     - name: "Create an object in Panorama via API"
       uri:
-        url: "https://{{ panorama_ip }}/api/"
+        url: "https://{{ ansible_host }}/api/"
         method: POST
         body_format: form-urlencoded
         body: >
-          type=config&action=set&key={{ pan_api_key }}&
+          type=config&action=set&key={{ lookup('env', 'pan_api_key') }}&
           xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{{ device_group }}']/address&
           element=<entry name='{{ object_name }}'><fqdn>{{ value }}</fqdn></entry>
         validate_certs: no
@@ -17,10 +17,10 @@
 
     - name: Commit changes on Panorama via API
       uri:
-        url: "https://{{ panorama_ip }}/api/"
+        url: "https://{{ ansible_host }}/api/"
         method: POST
         body_format: form-urlencoded
-        body: "type=commit&cmd=<commit></commit>&key={{ pan_api_key }}"
+        body: "type=commit&cmd=<commit></commit>&key={{ lookup('env', 'pan_api_key') }}"
         validate_certs: no
       register: commit_response
 
