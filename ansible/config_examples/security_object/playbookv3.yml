@@ -1,4 +1,4 @@
-- hosts: firewall_device
+- hosts: all
   connection: local
   gather_facts: False
 
