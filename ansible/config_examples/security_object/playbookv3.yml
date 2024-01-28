@@ -9,7 +9,7 @@
         method: POST
         body_format: form-urlencoded
         body: >
-          type=config&action=set&key={{ lookup('env', 'pan_api_key') }}&
+          type=config&action=set&key={{ lookup('pan_api_key') }}&
           xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{{ device_group }}']/address&
           element=<entry name='{{ object_name }}'><fqdn>{{ value }}</fqdn></entry>
         validate_certs: no
@@ -20,7 +20,7 @@
         url: "https://{{ panorama_ip }}/api/"
         method: POST
         body_format: form-urlencoded
-        body: "type=commit&cmd=<commit></commit>&key={{ lookup('env', 'pan_api_key') }}"
+        body: "type=commit&cmd=<commit></commit>&key={{ lookup('pan_api_key') }}"
         validate_certs: no
       register: commit_response
 
@@ -30,7 +30,7 @@
         method: POST
         body_format: form-urlencoded
         body: >
-          type=commit&action=all&cmd=<commit-all><shared-policy><device-group><entry name='{{ device_group }}'/></device-group></shared-policy></commit-all>&key={{ lookup('env', 'pan_api_key') }}"
+          type=commit&action=all&cmd=<commit-all><shared-policy><device-group><entry name='{{ device_group }}'/></device-group></shared-policy></commit-all>&key={{ lookup('pan_api_key') }}"
         validate_certs: no
       register: push_response
 
