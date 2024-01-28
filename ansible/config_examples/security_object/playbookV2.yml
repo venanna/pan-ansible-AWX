@@ -8,7 +8,7 @@
     - name: "Create an object in Panorama"
       panos_address_object:
         ip_address: "{{ ansible_host }}"  # Define 'panorama_ip' in AWX or playbook vars
-        api_key: "{{ lookup('env', 'PANORAMA_API_KEY') }}"
+        api_key: "{{ lookup('env', 'test_pan_api_key') }}"
         name: "{{ object_name }}"
         address_type: "fqdn"
         value: "gaming.redtail.com"
@@ -18,11 +18,11 @@
     - name: Commit changes on Panorama
       panos_commit:
         ip_address: "{{ ansible_host }}"  # Reuse 'panorama_ip' variable
-        api_key: "{{ lookup('env', 'PANORAMA_API_KEY') }}"
+        api_key: "{{ lookup('env', 'test_pan_api_key') }}"
 
     - name: Push configuration to devices
       panos_commit_firewall:
         ip_address: "{{ ansible_host }}"  # Reuse 'panorama_ip' variable
-        api_key: "{{ lookup('env', 'PANORAMA_API_KEY') }}"
+        api_key: "{{ lookup('env', 'test_pan_api_key') }}"
         device_group: "Your_Device_Group"
         sync_to_peer: yes
