@@ -9,6 +9,7 @@
     - name: "Validate that Panorama would allow us to create an object, check mode"
       panos_address_object:
         ip_address: "10.0.131.80"
+        username: "vannapa"
         api_key: "LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ"
         name: "{{ object_name }}"  # Changed from "Gaming-PC" to use a variable
         address_type: "fqdn"
