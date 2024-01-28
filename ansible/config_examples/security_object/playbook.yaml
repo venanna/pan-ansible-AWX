@@ -20,3 +20,7 @@
       panos_commit:
         ip_address: "10.0.131.80"
         api_key: "LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ=="
+        
+    - name: Debug API response
+      debug:
+        var: response
