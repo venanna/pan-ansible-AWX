@@ -1,0 +1,28 @@
+- hosts: all
+  connection: local
+  gather_facts: False
+
+  tasks:
+    - name: "Check if source object exists"
+      uri:
+        url: "https://{{ ansible_host }}/api/"
+        method: POST
+        body_format: form-urlencoded
+        body: >
+          type=config&action=get&key={{ pan_api_key }}&
+          xpath=/config/.../address/entry[@name='{{ source_object_name }}']
+        validate_certs: no
+      register: source_object_response
+
+    - name: "Check if destination object exists"
+      uri:
+        url: "https://{{ ansible_host }}/api/"
+        method: POST
+        body_format: form-urlencoded
+        body: >
+          type=config&action=get&key={{ pan_api_key }}&
+          xpath=/config/.../address/entry[@name='{{ destination_object_name }}']
+        validate_certs: no
+      register: destination_object_response
+
+    # Additional tasks to handle the response and make decisions based on the existence of the objects
