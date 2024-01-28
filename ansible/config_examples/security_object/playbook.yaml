@@ -21,10 +21,3 @@
       panos_commit:
         ip_address: "10.0.131.80"
         api_key: "LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ=="
-
-    - name: Push configuration to devices
-      panos_commit_firewall:
-        ip_address: "10.0.131.80"
-        api_key: "LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ=="
-        device_group: "AL-PA5220"
-        sync_to_peer: yes
