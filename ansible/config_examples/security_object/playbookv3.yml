@@ -5,7 +5,7 @@
   tasks:
     - name: "Create an object in Panorama via API"
       uri:
-        url: "https://{{ panorama_ip }}/api/"
+        url: "https://{{ ansible_host }}/api/"
         method: POST
         body_format: form-urlencoded
         body: >
