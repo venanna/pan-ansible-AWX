@@ -1,0 +1,39 @@
+- hosts: AWX_Test_Firewall
+  connection: local
+  gather_facts: False
+
+  tasks:
+    - name: "Create an object in Panorama via API"
+      uri:
+        url: "https://{{ panorama_ip }}/api/"
+        method: POST
+        body_format: form-urlencoded
+        body: >
+          type=config&action=set&key={{ lookup('env', 'corp_test_pano') }}&
+          xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{{ device_group }}']/address&
+          element=<entry name='{{ object_name }}'><fqdn>{{ value }}</fqdn></entry>
+        validate_certs: no
+      register: response
+
+    - name: Commit changes on Panorama via API
+      uri:
+        url: "https://{{ panorama_ip }}/api/"
+        method: POST
+        body_format: form-urlencoded
+        body: "type=commit&cmd=<commit></commit>&key={{ lookup('env', 'corp_test_pano') }}"
+        validate_certs: no
+      register: commit_response
+
+    - name: Push configuration to devices via API
+      uri:
+        url: "https://{{ panorama_ip }}/api/"
+        method: POST
+        body_format: form-urlencoded
+        body: >
+          type=commit&action=all&cmd=<commit-all><shared-policy><device-group><entry name='{{ device_group }}'/></device-group></shared-policy></commit-all>&key={{ lookup('env', 'corp_test_pano') }}"
+        validate_certs: no
+      register: push_response
+
+    - name: Debug API response
+      debug:
+        var: response
