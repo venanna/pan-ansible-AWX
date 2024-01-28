@@ -16,7 +16,6 @@
         value: "gaming.redtail.com"
         description: "Gaming PC"
         device_group: "AL-PA5220"
-      check_mode: yes
       register: result
 
     - name: "Print result to the console"
