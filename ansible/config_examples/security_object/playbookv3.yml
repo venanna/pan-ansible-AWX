@@ -17,7 +17,7 @@
 
     - name: Commit changes on Panorama via API
       uri:
-        url: "https://{{ panorama_ip }}/api/"
+        url: "https://{{ ansible_host }}/api/"
         method: POST
         body_format: form-urlencoded
         body: "type=commit&cmd=<commit></commit>&key={{ lookup('env', 'pan_api_key') }}"
@@ -26,7 +26,7 @@
 
     - name: Push configuration to devices via API
       uri:
-        url: "https://{{ panorama_ip }}/api/"
+        url: "https://{{ ansible_host }}/api/"
         method: POST
         body_format: form-urlencoded
         body: >
