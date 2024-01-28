@@ -6,7 +6,7 @@
     - paloaltonetworks.panos
 
   tasks:
-    - name: "Validate and create an object, check mode"
+    - name: "Validate and create an object"
       panos_address_object:
         ip_address: "10.0.131.80"
         api_key: "LUFRPT1uNGEvNVhlQzZadmpPUkgyUjRKUGRFdzhuVmM9M1hpNTlUWVJjZWFoTy8ycCtmRHJoaHIyU1hBM1FXL1hUbzNGMGFvbm1kVzNUeThDWEVRQmVEQnA2aTBqT0RMaQ=="
@@ -15,7 +15,6 @@
         value: "gaming.redtail.com"
         description: "{{ object_description }}"
         device_group: "AL-PA5220"
-      check_mode: yes
 
     - name: Commit changes on Panorama
       panos_commit:
