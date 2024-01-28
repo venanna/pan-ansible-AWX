@@ -1,4 +1,4 @@
-- hosts: firewall_device
+- hosts: AWX_Test_Firewall
   connection: local
   gather_facts: False
 
